@@ -1,10 +1,7 @@
 <?php
+    // session_start();
      // Connection BDD
      include("./Includes/database.php");
-
-    $login = htmlspecialchars($_POST['login']);
-    $password = htmlspecialchars($_POST['password']);
-    $password2 = htmlspecialchars($_POST['password2']);
 
     // var_dump($user);
     if(isset($login) 
