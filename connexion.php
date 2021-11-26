@@ -3,15 +3,17 @@
     include("./Includes/database.php");
 
   if(isset($login)){
+        
         $queryConnect = mysqli_query($bdd, "SELECT * FROM `utilisateurs` WHERE `login` = '$login'");
         $queryConnectResult = mysqli_fetch_all($queryConnect, MYSQLI_ASSOC);
 
         if(count($queryConnectResult) != 0){
 
             $passwordBdd = $queryConnectResult[0]["password"];
-
+            
             if(password_verify($password, $passwordBdd)){
                 $_SESSION["user"] = $queryConnectResult;
+                header('location:index.php');
             }
         }
         elseif($login != $queryConnectResult['login']){
@@ -33,7 +35,7 @@
         $passEmptyError = "*Password empty";
         echo $passEmptyError;
         }
-        elseif($password != $queryConnectResult){
+        elseif($password != $queryConnectResult["password"]){
             $wrongpassword = "*Wrong password";
             echo $wrongpassword;
         }
