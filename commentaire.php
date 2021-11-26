@@ -1,3 +1,20 @@
+<?php
+    include("./Includes/database.php");
+
+    
+    $idUser = $_SESSION['user'][0]['id'];
+    var_dump($idUser);
+
+    if(isset($_POST['send']))
+    { $userComment = $_POST['userComment'];
+      $date = date("Y/m/d");
+
+            $queryComment = mysqli_query($bdd, "INSERT INTO `commentaires`(`commentaire`, `id_utilisateur`, `date`) VALUES ('".$userComment."','$idUser','$date')");
+            var_dump($queryComment);
+    }
+    // echo $userComment;
+    
+    ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,10 +25,16 @@
     <link href="./Style/styles.css" rel="stylesheet">
 </head>
 <body>
-<?php require '..\Includes\header.php'?>
-<main>
-    
-</main>
-<?php require '..\Includes\footer.php'?>
+    <?php include("./Includes/header.php")?>
+    <main>
+        <h1>Bonjour <?php echo $_SESSION["user"][0]["login"]?></h1>
+        <form action="" method="post">
+            <label for="comment"></label>
+            <!-- <input name="userComment" id="comment" cols="50" rows="10"> -->
+            <textarea name="userComment" id="comment" cols="50" rows="10"></textarea>
+            <input type="submit" name="send" value="send">
+        </form>
+    </main>
+    <?php include("./Includes/footer.php")?>
 </body>
 </html>
