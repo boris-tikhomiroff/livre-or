@@ -7,10 +7,12 @@
 
     if(isset($_POST['send']))
     { $userComment = $_POST['userComment'];
-      $date = date("Y/m/d");
+      $date = date("Y/m/d H:i:s");
 
             $queryComment = mysqli_query($bdd, "INSERT INTO `commentaires`(`commentaire`, `id_utilisateur`, `date`) VALUES ('".$userComment."','$idUser','$date')");
-            var_dump($queryComment);
+            header("Refresh:0");
+            $sentMsg ="your message has been sent";
+            echo $sentMsg;
     }
     // echo $userComment;
     
