@@ -1,42 +1,47 @@
 <?php
-    include("./Includes/database.php");
+    session_start();
 
-    
-    $idUser = $_SESSION['user'][0]['id'];
-    var_dump($idUser);
+    require_once './include/db.php';
+
+    $idUser = $_SESSION['userId'];
 
     if(isset($_POST['send']))
     { $userComment = $_POST['userComment'];
       $date = date("Y/m/d H:i:s");
 
             $queryComment = mysqli_query($bdd, "INSERT INTO `commentaires`(`commentaire`, `id_utilisateur`, `date`) VALUES ('".$userComment."','$idUser','$date')");
-            header("Refresh:0");
-            $sentMsg ="your message has been sent";
-            echo $sentMsg;
+            $_SESSION['flash']['sucess'] = "Your message has been posted.";
+            header('location:index.php');
     }
-    // echo $userComment;
-    
-    ?>
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Livre d'or || Commentaire</title>
-    <link href="./Style/styles.css" rel="stylesheet">
+    <title>Go Magritte || Comment</title>
+    <link rel="icon" type="image/x-icon" href="./assets/images/favicon.ico">
+    <link href="./style/styles.css" rel="stylesheet">
 </head>
 <body>
-    <?php include("./Includes/header.php")?>
-    <main>
-        <h1>Bonjour <?php echo $_SESSION["user"][0]["login"]?></h1>
-        <form action="" method="post">
+    <?php require 'include/header.php'?>
+    <main class="main_form">
+        <form action="" method="post" class="form">
+            
+            <h1 class="formTittle">Hello <?php echo $_SESSION['user']?></h1>
+
+        <div class="formSection formSection2">
             <label for="comment"></label>
-            <!-- <input name="userComment" id="comment" cols="50" rows="10"> -->
-            <textarea name="userComment" id="comment" cols="50" rows="10"></textarea>
-            <input type="submit" name="send" value="send">
+            <textarea name="userComment" id="comment" class="formText" placeholder="Message" cols="30" rows="10"></textarea>
+        </div>
+
+        <div class="formSection formSection3">
+            <input type="submit" name="send" value="Submit" class="formButton">
+        </div>
+
         </form>
     </main>
-    <?php include("./Includes/footer.php")?>
+    <?php require 'include/footer.php'?>
 </body>
 </html>

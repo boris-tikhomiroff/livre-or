@@ -1,75 +1,94 @@
-<?php
-    // session_start();
-     // Connection BDD
-     include("./Includes/database.php");
-
-    // var_dump($user);
-    if(isset($login) 
-    && (!empty($login)) 
-    && isset($password) 
-    && (!empty($password)))
-    {
+<?php 
+    if(!empty($_POST)){
         
-        $loginCheck = mysqli_query($bdd, "SELECT `login` FROM `utilisateurs` WHERE `login` = '$login'");
-        $loginCheckResult = mysqli_fetch_all($loginCheck, MYSQLI_ASSOC);
+        // Erreurs possibles
+        $errors = array();
+        $login = $_POST['login'];
+        $password = $_POST['password'];
 
-        if(count($loginCheckResult) != 0)
-        {
-            $loginUnavailableError = "*Login not available";
-            echo $loginUnavailableError;
+        require './include/db.php';
+        
+        if(empty($_POST['login'])){
+            $errors['login'] = "Your login is not valid";
+        } else {
+            $loginCheck = mysqli_query($bdd, "SELECT `login` FROM `utilisateurs` WHERE `login` = '$login'");
+            $loginCheckResult = mysqli_fetch_all($loginCheck, MYSQLI_ASSOC);
+
+            if(count($loginCheckResult) != 0){
+            $errors['login'] = "Login not available";
+            }
         }
 
-        elseif($password == $password2){
-            // $PassError = "*Different password";
-            // echo $PassError;
-            $hashPassword = password_hash($password, PASSWORD_DEFAULT);
-            $addUser = mysqli_query($bdd, "INSERT INTO `utilisateurs`(`login`,`password`) VALUES ('$login','$hashPassword')");
+        if(empty($_POST['password'])){
+            $errors['password'] = "You must enter a valid password";
+        }
+
+        if($_POST['password'] != $_POST['password_confirm']){
+            $errors['password_confirm'] = "Your password doesn't match";
+        }
+
+        if (empty($errors)){
+            $password = password_hash($password, PASSWORD_BCRYPT);
+            $addUser = mysqli_query($bdd, "INSERT INTO `utilisateurs`(`login`,`password`) VALUES ('$login','$password')");
+
+            session_start();
+            $_SESSION['flash']['sucess'] = "Your account has been create, you can now log in. ";
+            header('location:index.php');
         }
     }
-    if(isset($_POST['submit']))
-    {
-        if(empty($login))
-        {
-        $loginEmptyError = "*Login empty";
-        echo $loginEmptyError;
-        }
-
-        elseif(empty($password))
-        {
-        $passEmptyError = "*Password empty";
-        echo $passEmptyError;
-        }
-
-        elseif($password != $password2){
-            $passwordNotMatch = "Different password";
-            echo $passwordNotMatch;
-        }
-    }
-
+    
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Livre d'or || Page d'accueil</title>
-    <link href="./Style/styles.css" rel="stylesheet">
+    <title>Go Magritte || Sign Up</title>
+    <link rel="icon" type="image/x-icon" href="./assets/images/favicon.ico">
+    <link href="./style/styles.css" rel="stylesheet">
 </head>
 <body>
-    <?php include("./Includes/header.php")?>
-    <main>
-        <form action="" method="post">
-            <h1>Sign up</h1>
+    <?php require 'include/header.php'?>
+    <main class="main_form">
+    
+    <!-- Parcoure les potentielles erreurs -->
+    <?php if(!empty($errors)): ?>
+            <div class="errors">
+                <p>You have not completed the form correctly.</p>
+                </ul>
+                    <?php foreach($errors as $error): ?>
+                        <li><?= $error; ?></li>
+
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+    <?php endif; ?>
+
+    <form action="" method="post" class="form">
+        
+        <h1 class="formTittle">Sign up</h1>
+
+        <div class="formSection formSection1">
             <label for="login"></label>
-            <input type="text" id="login" name="login" placeholder="Choose your login" >
+            <input type="text" name="login" placeholder="Your login" class="formText">
+        </div>
+
+        <div class="formSection formSection2">
             <label for="password"></label>
-            <input type="text" id="password" name="password" placeholder="Choose your password">
-            <label for="password2"></label>
-            <input type="text" id="password2" name="password2" placeholder="Confirm your password">
-            <input type="submit" name="submit" value="submit">
-        </form>
+            <input type="password" name="password" placeholder="Your password" class="formText">
+        </div>
+        
+        <div class="formSection  formSection3">
+            <label for="password_confirm"></label>
+            <input type="password" name="password_confirm" placeholder="Confirm your password" class="formText">
+        </div>
+        <div class="formSection formSection4">
+            <button type="submit" name="submit" class="formButton">Submit</button>
+        </div>
+    </form>
     </main>
-    <?php include("./Includes/footer.php")?>
+    <?php require 'include/footer.php'?>
 </body>
 </html>
